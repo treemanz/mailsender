@@ -34,6 +34,8 @@ public class ConnectionParams {
     private long ioTimeout = 5000;
 
     private PrintStream debugOut = System.out;
+    
+    private String mailProvider = "163";
 
     public String getProtocol() {
         return protocol;
@@ -153,5 +155,19 @@ public class ConnectionParams {
 
     public long getIoTimeout() {
         return ioTimeout;
+    }
+
+    /**
+     * @return the mailProvider
+     */
+    public String getMailProvider() {
+        return mailProvider;
+    }
+
+    /**
+     * @param mailProvider the mailProvider to set
+     */
+    public void setMailProvider(String mailProvider) {
+        this.mailProvider = mailProvider;
     }
 }

@@ -54,18 +54,30 @@ public final class Connection {
         properties.put("mail.smtp.host", connectionParams.getHost());
         // 设置HeloName和ElhoName
         try {
-            properties.put("mail.smtp.localhost", MimeUtility
-                    .encodeWord(connectionParams.getHeloName()));
+            properties.put("mail.smtp.localhost",
+                    MimeUtility.encodeWord(connectionParams.getHeloName()));
         } catch (UnsupportedEncodingException e) {
-            properties.put("mail.smtp.localhost", connectionParams
-                    .getHeloName());
+            properties.put("mail.smtp.localhost",
+                    connectionParams.getHeloName());
         }
+        properties.put("mail.smtp.port",
+                Integer.toString(connectionParams.getPort()));
         // 设置服务器是否需要认证
-        properties.put("mail.smtp.auth", connectionParams.isNeedAuth());
-        properties.put("mail.from", connectionParams.getEnvelopeFrom());
-        properties.put("mail.smtp.connectiontimeout", connectionParams
-                .getConnectionTimeout());
-        properties.put("mail.smtp.timeout", connectionParams.getIoTimeout());
+        if (connectionParams.getMailProvider().equals("gmail")) {
+            properties.put("mail.smtp.auth", connectionParams.isNeedAuth());
+            properties.put("mail.smtp.starttls.enable", "true");
+            properties.put("mail.smtp.EnableSSL.enable", "true");
+            properties.setProperty("mail.smtp.socketFactory.class",
+                    "javax.net.ssl.SSLSocketFactory");
+            properties.setProperty("mail.smtp.socketFactory.fallback", "false");
+        } else {
+            properties.put("mail.smtp.auth", connectionParams.isNeedAuth());
+            properties.put("mail.from", connectionParams.getEnvelopeFrom());
+            properties.put("mail.smtp.connectiontimeout",
+                    connectionParams.getConnectionTimeout());
+            properties
+                    .put("mail.smtp.timeout", connectionParams.getIoTimeout());
+        }
 
         session = Session.getInstance(properties, getAuthenticator());
         // 设置是否将发送邮件过程中的debug信息输出
@@ -76,8 +88,8 @@ public final class Connection {
         }
         URLName urlName = new URLName(connectionParams.getProtocol(),
                 connectionParams.getHost(), connectionParams.getPort(), null,
-                connectionParams.getEnvelopeFrom(), connectionParams
-                        .getPassword());
+                connectionParams.getEnvelopeFrom(),
+                connectionParams.getPassword());
         // 连接服务器
         try {
             transport = session.getTransport(urlName);
